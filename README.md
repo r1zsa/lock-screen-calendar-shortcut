@@ -1,2 +1,2 @@
-# lsc
+# Lockscreen Calendar
 Lockscreen Calendar
