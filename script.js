@@ -1,6 +1,4 @@
-// Year Progress Wallpaper v26 - Configurable Version
-// by agaragou
-// https://github.com/agaragou/LockScreen-Calendar-ShortCut
+// Year Progress Wallpaper v0.26 - RZ Version
 const CONFIG = {
     // --- USER CONFIGURATION ---
 
@@ -20,8 +18,8 @@ const CONFIG = {
     // Calendar Key (only calendars starting with this character will be shown)
     calendarPrefix: "*",
     // Optional: List of specific calendar names to USE (overrides prefix)
-    // specificCalendarNames: ["Work", "Home"], 
-    specificCalendarNames: [],
+    // specificCalendarNames:( ["Work", "Home"], 
+    specificCalendarNames: ["*Születés+Névnap", "RZ"],
 
     // Start of week: 0 = Sunday, 1 = Monday
     firstDayOfWeek: 1,
@@ -33,6 +31,9 @@ const CONFIG = {
     // true = draws "1", "2", "3"...
     // false = draws dots (default)
     showDayNumbers: true,
+
+    highlightWeekends: true,
+    dimPastDays: true,       // If true, past days are 30% opacity
 
     // Manual significant dates (if you don't want to use a calendar)
     // Format: "MM-DD"
@@ -46,12 +47,14 @@ const CONFIG = {
     // Interface Colors
     colors: {
         bg: new Color("#000000"),
-        pastDay: new Color("#aaaaaa", 0.95),
-        futureDay: new Color("#2c2c2e"),
-        today: new Color("#ff3b30"),
+        pastDay: new Color("#333333", 1),
+        futureDay: new Color("#333333"),
+        // today: new Color("#ff3b30"),
+        today: new Color("#ff9e30"),
         significant: new Color("#FFD60A"), // For manualSignificantDates
         text: new Color("#98989d"),
-        stats: new Color("#ff9f0a")
+        stats: new Color("#ff9f0a"),
+        weekend: new Color("#666666")
     },
 
     // Design Ratios (Auto-Scale)
@@ -193,6 +196,14 @@ function getDayColor(year, month, day) {
     const isPast = absTarget < absCurrent;
     const isToday = absTarget === absCurrent;
 
+    // Helper to dim color if needed
+    const finalizeColor = (c) => {
+      if (CONFIG.dimPastDays && isPast) {
+        return new Color(c.hex, 0.85); // 85% opacity for past days
+      }
+     return c;
+    };
+
     // 1. Priority: Today
     if (isToday) return CONFIG.colors.today;
 
@@ -205,14 +216,23 @@ function getDayColor(year, month, day) {
     // 3. Priority: Calendars
     for (let calData of activeCalendarsData) {
         for (let event of calData.events) {
-            if (event.start <= dayEnd && event.end >= dayStart) {
-                return calData.color;
-            }
+        if (event.start <= dayEnd && event.end >= dayStart) {
+            return finalizeColor(calData.color);
+        }
         }
     }
 
-    // 4. Background
-    if (isPast) return CONFIG.colors.pastDay;
+    // 4. Weekend
+    const dayOfWeek = new Date(year, month, day).getDay();
+    if (CONFIG.highlightWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
+        return finalizeColor(CONFIG.colors.weekend);
+    }
+
+    // 5. Background
+    if (isPast) {
+        if (CONFIG.dimPastDays) return finalizeColor(CONFIG.colors.futureDay); // "As it was" (dimmed future color)
+        return CONFIG.colors.pastDay;
+    }
     return CONFIG.colors.futureDay;
 }
 
