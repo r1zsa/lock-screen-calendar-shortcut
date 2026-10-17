@@ -178,7 +178,8 @@ ctx.opaque = true;
 ctx.setFillColor(CONFIG.colors.bg);
 ctx.fillRect(new Rect(0, 0, width, height));
 
-const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+// const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 function getDayColor(year, month, day) {
     const monthStr = (month + 1).toString().padStart(2, '0');
@@ -220,7 +221,7 @@ const totalCalendarWidth = (CONFIG.monthsPerRow * monthBlockWidth) + ((CONFIG.mo
 const startX = (width - totalCalendarWidth) / 2;
 
 // Loop for dynamic number of months
-const START_MONTH_OFFSET = 0; // 0 means start from Current Month. Change to -1 for Previous, etc.
+const START_MONTH_OFFSET = -1; // 0 means start from Current Month. Change to -1 for Previous, etc.
 
 for (let i = START_MONTH_OFFSET; i < START_MONTH_OFFSET + CONFIG.monthsToShow; i++) {
     // Logic to handle month/year overflow
